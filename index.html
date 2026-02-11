@@ -79,7 +79,10 @@
   <form id="formFrontliner">
 
     <label>Nama</label>
-    <input type="text" name="nama" required>
+    <select name="nama" id="nama" required>
+  <option value="">Memuat data...</option>
+</select>
+
 
     <label>Posisi</label>
     <select name="posisi" required>
@@ -122,6 +125,21 @@
   const scriptURL = 'https://script.google.com/macros/s/AKfycbxLpTjVBkpSflQIfX_AQNwZ9jXJOlb2AAdnOQWjnphurBX3YxhMjX11TgNcRtvKqO-M/exec';
   const form = document.getElementById('formFrontliner');
   const successMessage = document.getElementById('successMessage');
+
+  // 🔥 Ambil daftar nama dari Google Sheet
+fetch(scriptURL)
+  .then(res => res.json())
+  .then(data => {
+    const select = document.getElementById("nama");
+    select.innerHTML = '<option value="">Pilih Nama</option>';
+    
+    data.forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+  });
 
   form.addEventListener('submit', e => {
     e.preventDefault();
