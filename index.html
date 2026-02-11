@@ -125,10 +125,14 @@
   const form = document.getElementById('formFrontliner');
   const successMessage = document.getElementById('successMessage');
 
-  // 🔥 Ambil daftar nama dari Google Sheet
+ let daftarNama = []; // 🔥 simpan nama master
+
+// 🔥 Ambil daftar nama dari Google Sheet
 fetch(scriptURL)
   .then(res => res.json())
   .then(data => {
+    daftarNama = data; // simpan ke variabel
+
     const dataList = document.getElementById("namaList");
     dataList.innerHTML = "";
     
@@ -139,18 +143,33 @@ fetch(scriptURL)
     });
   });
 
+ form.addEventListener('submit', e => {
+  e.preventDefault();
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-      .then(response => {
-        successMessage.innerHTML = "Laporan berhasil dikirim ✔";
-        form.reset();
-      })
-      .catch(error => {
-        successMessage.innerHTML = "Gagal mengirim data.";
-      });
-  });
+  const namaInput = document.getElementById("nama").value;
+
+  // 🔥 Cek apakah nama ada di Master
+  if (!daftarNama.includes(namaInput)) {
+    successMessage.innerHTML = "Nama Belum terdaftar!";
+    successMessage.style.color = "red";
+    return;
+  }
+
+  successMessage.innerHTML = "Mengirim...";
+  successMessage.style.color = "black";
+
+  fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+    .then(response => {
+      successMessage.innerHTML = "✔ Laporan berhasil dikirim";
+      successMessage.style.color = "green";
+      form.reset();
+    })
+    .catch(error => {
+      successMessage.innerHTML = "Gagal mengirim data.";
+      successMessage.style.color = "red";
+    });
+});
+
 </script>
 
 </body>
