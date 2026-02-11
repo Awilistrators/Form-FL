@@ -151,9 +151,6 @@
 </div>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycby_QbtHl9pO1Z6OUWaz27iNBNiP69SAD42Q-boIpg5scIYPkjNEdWPX7n2H4ef0Jmgdww/exec';
-  const form = document.getElementById('formFrontliner');
-  const successMessage = document.getElementById('successMessage');
 
 const scriptURL = 'https://script.google.com/macros/s/AKfycby_QbtHl9pO1Z6OUWaz27iNBNiP69SAD42Q-boIpg5scIYPkjNEdWPX7n2H4ef0Jmgdww/exec';
 const form = document.getElementById('formFrontliner');
@@ -170,7 +167,8 @@ fetch(scriptURL)
   .then(res => res.json())
   .then(data => {
     daftarNama = data;
-  });
+  })
+  .catch(err => console.log("Error ambil data:", err));
 
 // 🔥 Saat mengetik nama
 namaSearch.addEventListener("input", function () {
