@@ -1,156 +1,119 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>FL Suryatokoku</title>
+  <title>Form Frontliner Suryatokoku</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  
   <style>
     body {
+      font-family: 'Poppins', sans-serif;
+      background: #f4f6f9;
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #f1f3f6;
-    }
-
-    /* App Bar */
-    .appbar {
-      background: #000000;
-      color: white;
-      padding: 18px;
-      font-size: 18px;
-      font-weight: 600;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-
-    /* Container */
-    .container {
       padding: 20px;
+    }
+
+    .container {
       max-width: 500px;
       margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
 
-    /* Card */
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 18px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
     }
 
     label {
-      font-size: 13px;
       font-weight: 600;
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
+      font-size: 14px;
     }
 
     input, select {
       width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
       font-size: 14px;
-      background: #fafafa;
     }
 
-    input:focus, select:focus {
-      outline: none;
-      border: 1px solid #000000;
-      background: #ffffff;
-    }
-
-    /* Floating Button */
-    .submit-btn {
-      margin-top: 25px;
+    button {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       background: #000000;
       color: white;
       border: none;
-      border-radius: 14px;
+      border-radius: 10px;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.3s;
     }
 
-    .submit-btn:active {
-      transform: scale(0.98);
+    button:hover {
+      background: #333333;
     }
 
     .success {
       text-align: center;
       color: green;
       font-size: 14px;
-      margin-top: 15px;
+      margin-top: 10px;
     }
-
-    .footer-space {
-      height: 40px;
-    }
-
   </style>
 </head>
 
 <body>
 
-<div class="appbar">
-  Laporan Frontliner
-</div>
-
 <div class="container">
-  <div class="card">
+  <h2>Form Laporan Harian<br>Suryatokoku</h2>
 
-    <form id="formFrontliner">
+  <form id="formFrontliner">
 
-      <label>Nama</label>
-      <input type="text" name="nama" required>
+    <label>Nama</label>
+    <input type="text" name="nama" required>
 
-      <label>Posisi</label>
-      <select name="posisi" required>
-        <option value="">Pilih Posisi</option>
-        <option>Pramuniaga</option>
-        <option>Beauty Advisor</option>
-        <option>Kasir</option>
-      </select>
+    <label>Posisi</label>
+    <select name="posisi" required>
+      <option value="">Pilih Posisi</option>
+      <option>Pramuniaga</option>
+      <option>Beauty Advisor</option>
+      <option>Kasir</option>
+    </select>
 
-      <label>Nominal COD</label>
-      <input type="number" name="cod">
+    <label>Nominal COD</label>
+    <input type="number" name="cod">
 
-      <label>Jumlah Closingan</label>
-      <input type="number" name="closingan">
+    <label>Jumlah Closingan</label>
+    <input type="number" name="closingan">
 
-      <label>Jumlah Postingan Medsos</label>
-      <input type="text" name="medsos">
+    <label>Jumlah Postingan Medsos</label>
+    <input type="text" name="medsos">
 
-      <label>Display & Kebersihan</label>
-      <select name="display">
-        <option>Sudah rapi & bersih</option>
-        <option>Belum maksimal</option>
-      </select>
+    <label>Display & Kebersihan</label>
+    <select name="display">
+      <option>Sudah rapi & bersih</option>
+      <option>Belum maksimal</option>
+    </select>
 
-      <label>Cek Expired</label>
-      <select name="expired">
-        <option>Aman</option>
-        <option>Ada mendekati expired</option>
-        <option>Ada expired</option>
-      </select>
+    <label>Cek Expired</label>
+    <select name="expired">
+      <option>Aman</option>
+      <option>Ada mendekati expired</option>
+      <option>Ada expired</option>
+    </select>
 
-      <button type="submit" class="submit-btn">
-        Kirim Laporan
-      </button>
+    <button type="submit">Kirim Laporan</button>
 
-      <div class="success" id="successMessage"></div>
+    <div class="success" id="successMessage"></div>
 
-    </form>
-
-  </div>
+  </form>
 </div>
-
-<div class="footer-space"></div>
 
 <script>
   const scriptURL = 'https://script.google.com/macros/s/AKfycbxLpTjVBkpSflQIfX_AQNwZ9jXJOlb2AAdnOQWjnphurBX3YxhMjX11TgNcRtvKqO-M/exec';
@@ -159,15 +122,13 @@
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    successMessage.innerHTML = "Mengirim...";
-    
     fetch(scriptURL, { method: 'POST', body: new FormData(form)})
       .then(response => {
-        successMessage.innerHTML = "✔ Laporan berhasil dikirim";
+        successMessage.innerHTML = "Laporan berhasil dikirim ✔";
         form.reset();
       })
       .catch(error => {
-        successMessage.innerHTML = "Gagal mengirim data";
+        successMessage.innerHTML = "Gagal mengirim data.";
       });
   });
 </script>
