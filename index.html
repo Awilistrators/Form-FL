@@ -79,9 +79,8 @@
   <form id="formFrontliner">
 
     <label>Nama</label>
-    <select name="nama" id="nama" required>
-  <option value="">Memuat data...</option>
-</select>
+    <input list="namaList" name="nama" id="nama" placeholder="Ketik atau pilih nama" required>
+<datalist id="namaList"></datalist>
 
 
     <label>Posisi</label>
@@ -130,16 +129,16 @@
 fetch(scriptURL)
   .then(res => res.json())
   .then(data => {
-    const select = document.getElementById("nama");
-    select.innerHTML = '<option value="">Pilih Nama</option>';
+    const dataList = document.getElementById("namaList");
+    dataList.innerHTML = "";
     
     data.forEach(name => {
       const option = document.createElement("option");
       option.value = name;
-      option.textContent = name;
-      select.appendChild(option);
+      dataList.appendChild(option);
     });
   });
+
 
   form.addEventListener('submit', e => {
     e.preventDefault();
