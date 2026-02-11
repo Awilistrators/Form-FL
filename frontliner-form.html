@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Form Frontliner Suryatokoku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h2>Form Laporan Harian Frontliner</h2>
+
+  <form id="formFrontliner">
+    <label>Nama:</label><br>
+    <input type="text" name="nama" required><br><br>
+
+    <label>Posisi:</label><br>
+    <select name="posisi" required>
+      <option value="">Pilih Posisi</option>
+      <option>Pramuniaga</option>
+      <option>Beauty Advisor</option>
+      <option>Kasir</option>
+    </select><br><br>
+
+    <label>Nominal COD:</label><br>
+    <input type="number" name="cod"><br><br>
+
+    <label>Jumlah Closingan:</label><br>
+    <input type="number" name="closingan"><br><br>
+
+    <label>Jumlah Postingan Medsos:</label><br>
+    <input type="text" name="medsos"><br><br>
+
+    <label>Display & Kebersihan:</label><br>
+    <select name="display">
+      <option>Sudah rapi & bersih</option>
+      <option>Belum maksimal</option>
+    </select><br><br>
+
+    <label>Cek Expired:</label><br>
+    <select name="expired">
+      <option>Aman</option>
+      <option>Ada mendekati expired</option>
+      <option>Ada expired</option>
+    </select><br><br>
+
+    <button type="submit">Kirim</button>
+  </form>
+
+  <script>
+    const scriptURL = 'LINK_WEBAPP_KAMU';
+    const form = document.getElementById('formFrontliner');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+        .then(response => alert("Data berhasil dikirim!"))
+        .catch(error => alert("Gagal kirim data."));
+    });
+  </script>
+
+</body>
+</html>
