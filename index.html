@@ -44,7 +44,6 @@
   display: block;
 }
 
-
     button {
       width: 100%;
       padding: 12px;
@@ -68,6 +67,32 @@
       font-size: 14px;
       margin-top: 10px;
     }
+
+    .search-container {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+}
+
+.dropdown div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown div:hover {
+  background: #f2f2f2;
+}
+
   </style>
 </head>
 
@@ -79,8 +104,12 @@
   <form id="formFrontliner">
 
     <label>Nama</label>
-    <input list="namaList" name="nama" id="nama" placeholder="Ketik atau pilih nama" required>
-<datalist id="namaList"></datalist>
+<div class="search-container">
+  <input type="text" id="namaSearch" placeholder="Ketik nama..." autocomplete="off" required>
+  <div id="dropdownList" class="dropdown"></div>
+</div>
+
+<input type="hidden" name="nama" id="namaHidden">
 
 
     <label>Posisi</label>
@@ -126,32 +155,57 @@
   const form = document.getElementById('formFrontliner');
   const successMessage = document.getElementById('successMessage');
 
- let daftarNama = []; // 🔥 simpan nama master
+const scriptURL = 'https://script.google.com/macros/s/AKfycby_QbtHl9pO1Z6OUWaz27iNBNiP69SAD42Q-boIpg5scIYPkjNEdWPX7n2H4ef0Jmgdww/exec';
+const form = document.getElementById('formFrontliner');
+const successMessage = document.getElementById('successMessage');
 
-// 🔥 Ambil daftar nama dari Google Sheet
+let daftarNama = [];
+
+const namaSearch = document.getElementById("namaSearch");
+const dropdownList = document.getElementById("dropdownList");
+const namaHidden = document.getElementById("namaHidden");
+
+// 🔥 Ambil data dari Master
 fetch(scriptURL)
   .then(res => res.json())
   .then(data => {
-    daftarNama = data; // simpan ke variabel
-
-    const dataList = document.getElementById("namaList");
-    dataList.innerHTML = "";
-    
-    data.forEach(name => {
-      const option = document.createElement("option");
-      option.value = name;
-      dataList.appendChild(option);
-    });
+    daftarNama = data;
   });
 
- form.addEventListener('submit', e => {
+// 🔥 Saat mengetik nama
+namaSearch.addEventListener("input", function () {
+  const keyword = this.value.toLowerCase();
+  dropdownList.innerHTML = "";
+
+  if (keyword === "") {
+    dropdownList.style.display = "none";
+    return;
+  }
+
+  const hasilFilter = daftarNama.filter(nama =>
+    nama.toLowerCase().includes(keyword)
+  );
+
+  hasilFilter.forEach(nama => {
+    const div = document.createElement("div");
+    div.textContent = nama;
+    div.onclick = function () {
+      namaSearch.value = nama;
+      namaHidden.value = nama;
+      dropdownList.style.display = "none";
+    };
+    dropdownList.appendChild(div);
+  });
+
+  dropdownList.style.display = hasilFilter.length ? "block" : "none";
+});
+
+// 🔥 Submit
+form.addEventListener('submit', e => {
   e.preventDefault();
 
-  const namaInput = document.getElementById("nama").value;
-
-  // 🔥 Cek apakah nama ada di Master
-  if (!daftarNama.includes(namaInput)) {
-    successMessage.innerHTML = "Nama Belum terdaftar!";
+  if (!daftarNama.includes(namaHidden.value)) {
+    successMessage.innerHTML = "Nama belum terdaftar!";
     successMessage.style.color = "red";
     return;
   }
@@ -164,6 +218,7 @@ fetch(scriptURL)
       successMessage.innerHTML = "✔ Laporan berhasil dikirim";
       successMessage.style.color = "green";
       form.reset();
+      namaHidden.value = "";
     })
     .catch(error => {
       successMessage.innerHTML = "Gagal mengirim data.";
