@@ -168,17 +168,14 @@ fetch(scriptURL)
   .then(data => {
     daftarNama = data;
 
-    // Aktifkan input setelah data selesai
+    // Aktifkan input setelah data siap
     namaSearch.disabled = false;
     namaSearch.placeholder = "Ketik nama...";
-    
-    document.getElementById("loadingText").innerHTML = "Data siap ✔";
-    document.getElementById("loadingText").style.color = "green";
   })
   .catch(err => {
-    document.getElementById("loadingText").innerHTML = "Gagal memuat data!";
-    document.getElementById("loadingText").style.color = "red";
+    namaSearch.placeholder = "Gagal memuat data";
   });
+
 
   // 🔥 Saat mengetik nama
 namaSearch.addEventListener("input", function () {
