@@ -108,24 +108,35 @@ function loadData(){
     let totalCod=0;
     let totalClosing=0;
 
-    data.forEach(row=>{
-      const tr=document.createElement("tr");
+    data.forEach(row => {
 
-      totalCod += Number(row[3])||0;
-      totalClosing += Number(row[4])||0;
+  if (!row[1]) return; // skip baris kosong
 
-      tr.innerHTML=`
-        <td>${row[0]}</td>
-        <td>${row[1]}</td>
-        <td>${row[2]}</td>
-        <td>${formatRupiah(row[3])}</td>
-        <td>${row[4] ? row[4]+" Transaksi" : "-"}</td>
-        <td>${row[5] || "-"}</td>
-        <td>${row[6] || "-"}</td>
-        <td>${row[7] || "-"}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+  const no = row[0];
+  const nama = row[1];
+  const posisi = row[2];
+  const cod = Number(row[3]) || 0;
+  const closing = Number(row[4]) || 0;
+
+  const tr = document.createElement("tr");
+
+  totalCod += cod;
+  totalClosing += closing;
+
+  tr.innerHTML = `
+    <td>${no}</td>
+    <td>${nama}</td>
+    <td>${posisi}</td>
+    <td>${cod ? formatRupiah(cod) : "-"}</td>
+    <td>${closing ? closing + " Transaksi" : "-"}</td>
+    <td>${row[5] || "-"}</td>
+    <td>${row[6] || "-"}</td>
+    <td>${row[7] || "-"}</td>
+  `;
+
+  tbody.appendChild(tr);
+});
+
 
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML = totalClosing + " Transaksi";
