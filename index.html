@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laporan Frontliner</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:Poppins;
+  background:#f4f6f9;
+  padding:15px;
+  color:#ff4fa3;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+h1{
+  text-align:center;
+  font-size:20px;
+  margin-bottom:20px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  background:#ff4fa3;
+  border:none;
+  color:white;
+  font-weight:600;
+  border-radius:10px;
+  cursor:pointer;
+  margin-bottom:20px;
+}
+
+button:hover{
+  background:#e04391;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+th{
+  background:#ff4fa3;
+  color:white;
+  padding:8px;
+}
+
+td{
+  padding:6px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+  color:#000;
+}
+
+td:nth-child(2){
+  text-align:left;
+  padding-left:10px;
+}
+
+.total{
+  margin-top:15px;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>LAPORAN FRONTLINER<br>SURYATOKOKU</h1>
+
+<button onclick="location.href='form.html'">
+Form Laporan Harian
+</button>
+
+<h3>Rekap Hari Ini</h3>
+
+<table>
+<thead>
+<tr>
+<th>No</th>
+<th>Nama</th>
+<th>Posisi</th>
+<th>COD</th>
+<th>Closing</th>
+<th>Postingan</th>
+<th>Display</th>
+<th>Expired</th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
+</table>
+
+<div class="total">
+Total COD: <span id="totalCod">0</span><br>
+Total Closing: <span id="totalClosing">0</span>
+</div>
+
+</div>
+
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbwuOEOAHi0iQHUsdzFKxENor-t39RNmbpiW36ZFD0gRVm-NMrrrnUpuRtUU7XMUkTseZg/exec?rekap=1";
+
+function formatRupiah(n){
+  return n ? "Rp" + new Intl.NumberFormat("id-ID").format(n) : "-";
+}
+
+function loadToday(){
+ fetch(scriptURL)
+  .then(res=>res.json())
+  .then(data=>{
+    const tbody=document.getElementById("data");
+    tbody.innerHTML="";
+
+    let totalCod=0;
+    let totalClosing=0;
+
+    data.forEach(row=>{
+
+      if(!row[1]) return;
+
+      const cod = Number(row[3])||0;
+      const closing = Number(row[4])||0;
+
+      totalCod += cod;
+      totalClosing += closing;
+
+      const tr=document.createElement("tr");
+
+      tr.innerHTML=`
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td>${cod ? formatRupiah(cod) : "-"}</td>
+        <td>${closing ? new Intl.NumberFormat("id-ID").format(closing) + " Transaksi" : "-"}</td>
+        <td>${row[5] || "-"}</td>
+        <td>${row[6] || "-"}</td>
+        <td>${row[7] || "-"}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
+    document.getElementById("totalClosing").innerHTML =
+      new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
+  });
+}
+
+loadToday();
+</script>
+
+</body>
+</html>
