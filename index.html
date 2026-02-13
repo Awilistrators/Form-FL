@@ -125,6 +125,11 @@ button:disabled {
   font-weight: 600;
 }
 
+#popupBtn {
+  margin-top: 15px;
+  width: 100%;
+}
+
 </style>
 </head>
 
@@ -308,7 +313,7 @@ form.addEventListener('submit', e => {
 
   if (!daftarNama.includes(namaHidden.value)) {
     showPopup("Nama belum terdaftar!");
-    setTimeout(hidePopup, 1500);
+    setTimeout(() => popup.style.display = "none", 1500);
     return;
   }
 
@@ -321,7 +326,7 @@ form.addEventListener('submit', e => {
 
   fetch(scriptURL, { method: 'POST', body: new FormData(form)})
     .then(() => {
-      showPopup("✔ Laporan berhasil dikirim<br><br>Terima kasih atas kerja keras hari ini 🙏<br>Tetap semangat dan terus memberikan yang terbaik! ✨");
+      showPopup("✔ Laporan berhasil dikirim<br><br>Terima kasih atas kerja keras hari ini 🙏<br>Tetap semangat dan terus memberikan yang terbaik! ✨", true);
 
       form.reset();
       namaHidden.value = "";
