@@ -49,7 +49,15 @@ button:hover{
   background:#e04391;
 }
 
-/* TABLE WRAPPER (SCROLL MOBILE) */
+.btn-rekap{
+  background:#2d8cff;
+}
+
+.btn-rekap:hover{
+  background:#1f6fe0;
+}
+
+/* TABLE WRAPPER */
 .table-wrapper{
   overflow-x:auto;
   width:100%;
@@ -62,7 +70,7 @@ table{
   width:100%;
   border-collapse:collapse;
   font-size:13px;
-  min-width:750px; /* penting supaya tidak gepeng */
+  min-width:750px;
 }
 
 th{
@@ -81,18 +89,26 @@ td{
   color:#000;
 }
 
-/* nama rata kiri */
 td:nth-child(2){
   text-align:left;
   padding-left:10px;
 }
 
-/* cegah teks turun berantakan */
 td, th{
   white-space: nowrap;
 }
 
-/* total */
+/* INFO UPDATE */
+.info-update{
+  margin-top:14px;
+  margin-bottom:10px;
+  font-size:13px;
+  color:#2d8cff;
+  font-style:italic;
+  line-height:1.5;
+}
+
+/* TOTAL */
 .total{
   margin-top:18px;
   font-weight:600;
@@ -101,16 +117,8 @@ td, th{
   line-height:1.6;
 }
 
-/* responsive font */
-@media(max-width:600px){
-  table{
-    font-size:12px;
-  }
-}
-
-/* PERBESAR KHUSUS HP & TABLET */
+/* RESPONSIVE */
 @media (max-width:1024px){
-
   h1{
     font-size:48px;
     line-height:1.25;
@@ -120,19 +128,6 @@ td, th{
     font-size:32px;
     padding:22px;
   }
-
-}
-
-button{
-  letter-spacing:0.4px;
-}
-
-.btn-rekap{
-  background:#2d8cff;
-}
-
-.btn-rekap:hover{
-  background:#1f6fe0;
 }
 
 </style>
@@ -172,6 +167,12 @@ button{
 </table>
 </div>
 
+<!-- INFO UPDATE -->
+<div class="info-update">
+ℹ️ Apabila terdapat kesalahan input atau perubahan data, laporan harian dapat diisi ulang.<br>
+Sistem akan otomatis memperbarui data sebelumnya dengan data terbaru.
+</div>
+
 <div class="total">
 Total COD: <span id="totalCod">0</span><br>
 Total Closing: <span id="totalClosing">0</span>
@@ -188,7 +189,6 @@ function formatRupiah(n){
 
 function loadToday(){
 
- // 🔥 tanggal otomatis
  const today = new Date();
  const tanggal = today.toLocaleDateString("id-ID", {
    day: "numeric",
