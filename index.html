@@ -4,36 +4,36 @@
   <title>Form Frontliner Suryatokoku</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
+
+<style>
+body {
   font-family: 'Poppins', sans-serif;
   background: #f4f6f9;
   margin: 0;
   padding: 20px;
-  color: #ff4fa3; /* 🔥 semua font jadi pink */
+  color: #ff4fa3;
 }
 
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    }
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
 
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
 
-    label {
-      font-weight: 600;
-      font-size: 14px;
-    }
+label {
+  font-weight: 600;
+  font-size: 14px;
+}
 
-    input, select {
+input, select {
   width: 100%;
   padding: 10px;
   margin-top: 5px;
@@ -41,14 +41,13 @@
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 14px;
-  box-sizing: border-box;   /* 🔥 ini yang bikin rata */
-  display: block;
+  box-sizing: border-box;
 }
 
-    button {
+button {
   width: 100%;
   padding: 12px;
-  background: #ff4fa3; /* 🔥 pink */
+  background: #ff4fa3;
   color: white;
   border: none;
   border-radius: 10px;
@@ -59,17 +58,15 @@
 }
 
 button:hover {
-  background: #e04391; /* pink lebih gelap saat hover */
+  background: #e04391;
 }
 
-    .success {
-      text-align: center;
-      color: green;
-      font-size: 14px;
-      margin-top: 10px;
-    }
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
-    .search-container {
+.search-container {
   position: relative;
 }
 
@@ -94,8 +91,30 @@ button:hover {
   background: #f2f2f2;
 }
 
+/* POPUP */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.25);
+  z-index: 9999;
+}
 
-  </style>
+.popup-box {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 14px;
+  font-weight: 600;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  text-align: center;
+  color: #ff4fa3;
+}
+</style>
 </head>
 
 <body>
@@ -106,13 +125,11 @@ button:hover {
   <form id="formFrontliner">
 
     <label>Nama</label>
-<div class="search-container">
-  <input type="text" id="namaSearch" placeholder="Memuat data nama..." autocomplete="off" disabled required>
-  <div id="dropdownList" class="dropdown"></div>
-</div>
-
-<input type="hidden" name="nama" id="namaHidden">
-
+    <div class="search-container">
+      <input type="text" id="namaSearch" placeholder="Memuat data nama..." disabled required>
+      <div id="dropdownList" class="dropdown"></div>
+    </div>
+    <input type="hidden" name="nama" id="namaHidden">
 
     <label>Posisi</label>
     <select name="posisi" required>
@@ -129,7 +146,7 @@ button:hover {
     <input type="number" name="closingan" placeholder="Ex: 100 Transaksi">
 
     <label>Jumlah Postingan Medsos</label>
-    <input type="text" name="medsos" placeholder="Ex: 10 Postingan Story WA, 5 Story IG">
+    <input type="text" name="medsos" placeholder="Ex: 10 Story WA, 5 Story IG">
 
     <label>Display & Kebersihan</label>
     <select name="display">
@@ -141,45 +158,57 @@ button:hover {
     <select name="expired">
       <option>Belum Sempat</option>
       <option>Sudah - Aman</option>
-      <option>Sudah - Ada yg mendekati expired</option>
-      <option>Sudah - Ada yg sudah expired</option>
+      <option>Sudah - Mendekati expired</option>
+      <option>Sudah - Ada expired</option>
     </select>
 
     <button type="submit">Kirim Laporan</button>
 
-    <div class="success" id="successMessage"></div>
-
   </form>
 </div>
 
-<script>
+<!-- POPUP -->
+<div id="popup" class="popup">
+  <div class="popup-box" id="popupText">Memuat...</div>
+</div>
 
+<script>
 const scriptURL = 'https://script.google.com/macros/s/AKfycby_QbtHl9pO1Z6OUWaz27iNBNiP69SAD42Q-boIpg5scIYPkjNEdWPX7n2H4ef0Jmgdww/exec';
 const form = document.getElementById('formFrontliner');
-const successMessage = document.getElementById('successMessage');
+const submitBtn = form.querySelector("button");
 
 let daftarNama = [];
 
 const namaSearch = document.getElementById("namaSearch");
 const dropdownList = document.getElementById("dropdownList");
 const namaHidden = document.getElementById("namaHidden");
+const codInput = document.getElementById("cod");
 
-// 🔥 Ambil data dari Master
+const popup = document.getElementById("popup");
+const popupText = document.getElementById("popupText");
+
+function showPopup(text) {
+  popupText.innerHTML = text;
+  popup.style.display = "flex";
+}
+
+function hidePopup() {
+  popup.style.display = "none";
+}
+
+/* LOAD NAMA */
 fetch(scriptURL)
   .then(res => res.json())
   .then(data => {
     daftarNama = data;
-
-    // Aktifkan input setelah data siap
     namaSearch.disabled = false;
     namaSearch.placeholder = "Ketik nama...";
   })
-  .catch(err => {
+  .catch(() => {
     namaSearch.placeholder = "Gagal memuat data";
   });
 
-
-  // 🔥 Saat mengetik nama
+/* SEARCH DROPDOWN */
 namaSearch.addEventListener("input", function () {
   const keyword = this.value.toLowerCase();
   dropdownList.innerHTML = "";
@@ -189,14 +218,14 @@ namaSearch.addEventListener("input", function () {
     return;
   }
 
-  const hasilFilter = daftarNama.filter(nama =>
+  const hasil = daftarNama.filter(nama =>
     nama.toLowerCase().includes(keyword)
   );
 
-  hasilFilter.forEach(nama => {
+  hasil.forEach(nama => {
     const div = document.createElement("div");
     div.textContent = nama;
-    div.onclick = function () {
+    div.onclick = () => {
       namaSearch.value = nama;
       namaHidden.value = nama;
       dropdownList.style.display = "none";
@@ -204,50 +233,57 @@ namaSearch.addEventListener("input", function () {
     dropdownList.appendChild(div);
   });
 
-  dropdownList.style.display = hasilFilter.length ? "block" : "none";
+  dropdownList.style.display = hasil.length ? "block" : "none";
 });
 
-
-// 🔥 Submit
-form.addEventListener('submit', e => {
-  e.preventDefault();
-
-  if (!daftarNama.includes(namaHidden.value)) {
-    successMessage.innerHTML = "Nama belum terdaftar!";
-    successMessage.style.color = "red";
-    return;
+/* TUTUP DROPDOWN JIKA KLIK LUAR */
+document.addEventListener("click", e => {
+  if (!document.querySelector(".search-container").contains(e.target)) {
+    dropdownList.style.display = "none";
   }
-
-  successMessage.innerHTML = "Mengirim...";
-  successMessage.style.color = "black";
-
-  fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-    .then(response => {
-      successMessage.innerHTML = "✔ Laporan berhasil dikirim";
-      successMessage.style.color = "green";
-      form.reset();
-      namaHidden.value = "";
-      dropdownList.style.display = "none";
-    })
-    .catch(error => {
-      successMessage.innerHTML = "Gagal mengirim data.";
-      successMessage.style.color = "red";
-    });
 });
 
-  const codInput = document.getElementById("cod");
-
-// Format ke Rupiah otomatis
-codInput.addEventListener("input", function(e) {
-  let value = this.value.replace(/\D/g, ""); // hapus semua selain angka
-  
+/* FORMAT RUPIAH */
+codInput.addEventListener("input", function() {
+  let value = this.value.replace(/[^0-9]/g, "");
   if (value) {
-    this.value = new Intl.NumberFormat("id-ID").format(value);
+    this.value = "Rp" + new Intl.NumberFormat("id-ID").format(value);
   } else {
     this.value = "";
   }
 });
 
+/* SUBMIT */
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  if (!daftarNama.includes(namaHidden.value)) {
+    showPopup("Nama belum terdaftar!");
+    setTimeout(hidePopup, 1500);
+    return;
+  }
+
+  showPopup("Mengirim laporan...");
+  submitBtn.disabled = true;
+
+  // kirim angka bersih
+  codInput.value = codInput.value.replace(/[^0-9]/g, "");
+
+  fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+    .then(() => {
+      showPopup("✔ Laporan berhasil dikirim");
+      form.reset();
+      namaHidden.value = "";
+      dropdownList.style.display = "none";
+      submitBtn.disabled = false;
+      setTimeout(hidePopup, 1500);
+    })
+    .catch(() => {
+      showPopup("Gagal mengirim data");
+      submitBtn.disabled = false;
+      setTimeout(hidePopup, 2000);
+    });
+});
 </script>
 
 </body>
