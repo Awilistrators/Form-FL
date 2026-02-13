@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekap Harian</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:Poppins;
+  background:#f4f6f9;
+  padding:15px;
+  color:#ff4fa3;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+h2{text-align:center}
+
+input{
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  margin-bottom:15px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+th{
+  background:#ff4fa3;
+  color:white;
+  padding:8px;
+}
+
+td{
+  padding:6px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+}
+
+.total{
+  margin-top:15px;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Rekap Harian Frontliner</h2>
+
+<label>Pilih Tanggal</label><br>
+<input type="date" id="tanggal">
+
+<table>
+<thead>
+<tr>
+<th>No</th>
+<th>Nama</th>
+<th>Posisi</th>
+<th>COD</th>
+<th>Closing</th>
+<th>Postingan</th>
+<th>Display</th>
+<th>Expired</th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
+</table>
+
+<div class="total">
+Total COD: <span id="totalCod">0</span><br>
+Total Closing: <span id="totalClosing">0</span>
+</div>
+
+</div>
+
+<script>
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxh1z0V8b6e4dG18MerWbGwMtNONLhXFstRfPhyzIjyKKiTiX3yjdXCvWzzgN_8ih6qHQ/exec';
+
+document.getElementById("tanggal").addEventListener("change", loadData);
+
+function formatRupiah(n){
+  return n ? "Rp" + new Intl.NumberFormat("id-ID").format(n) : "-";
+}
+
+function loadData(){
+ fetch(scriptURL)
+  .then(res=>res.json())
+  .then(data=>{
+    const tbody=document.getElementById("data");
+    tbody.innerHTML="";
+
+    let totalCod=0;
+    let totalClosing=0;
+
+    data.forEach(row=>{
+      const tr=document.createElement("tr");
+
+      totalCod += Number(row[3])||0;
+      totalClosing += Number(row[4])||0;
+
+      tr.innerHTML=`
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td>${formatRupiah(row[3])}</td>
+        <td>${row[4] ? row[4]+" Transaksi" : "-"}</td>
+        <td>${row[5] || "-"}</td>
+        <td>${row[6] || "-"}</td>
+        <td>${row[7] || "-"}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
+    document.getElementById("totalClosing").innerHTML = totalClosing + " Transaksi";
+  });
+}
+</script>
+
+</body>
+</html>
