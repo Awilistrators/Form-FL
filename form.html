@@ -232,7 +232,10 @@ function showPopup(text, showButton=false){
   popup.style.display="flex";
   popupBtn.style.display=showButton?"block":"none";
 }
-popupBtn.onclick=()=>popup.style.display="none";
+popupBtn.onclick = () => {
+  popup.style.display = "none";
+  window.location.href = "index.html";
+};
 
 /* LOAD NAMA */
 fetch(scriptURL)
