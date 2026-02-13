@@ -130,6 +130,14 @@ td, th{
   }
 }
 
+.progress-info{
+  margin-top:4px;
+  margin-bottom:10px;
+  font-size:14px;
+  color:#16a34a;
+  font-weight:600;
+}
+
 </style>
 </head>
 
@@ -148,6 +156,7 @@ td, th{
 </button>
 
 <h3 id="judulTanggal">Laporan Hari Ini :</h3>
+<div id="progressLaporan" class="progress-info"></div>
 
 <div class="table-wrapper">
 <table>
@@ -207,10 +216,13 @@ function loadToday(){
 
     let totalCod=0;
     let totalClosing=0;
+    let jumlahLaporan = 0;
 
     data.forEach(row=>{
 
       if(!row[1]) return;
+
+      jumlahLaporan++; // hitung yang sudah isi
 
       const cod = Number(row[3])||0;
       const closing = Number(row[4])||0;
@@ -233,6 +245,12 @@ function loadToday(){
 
       tbody.appendChild(tr);
     });
+
+    // 🔥 TOTAL FRONTLINER (ambil dari data master)
+    const totalFrontliner = data.length;
+
+    document.getElementById("progressLaporan").innerHTML =
+      "✅ " + jumlahLaporan + " dari " + totalFrontliner + " frontliner sudah mengisi laporan";
 
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML =
