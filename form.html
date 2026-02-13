@@ -54,21 +54,35 @@ button {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 button:hover {
   background: #e04391;
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* INFO TEXT */
+.info-text{
+  display:block;
+  font-size:12px;
+  font-style:italic;
+  color:#2d8cff;
+  margin-top:-8px;
+  margin-bottom:14px;
+  line-height:1.4;
 }
 
-.search-container {
-  position: relative;
+.info-text a{
+  color:#2d8cff;
+  font-weight:600;
+  text-decoration:none;
 }
+
+.info-text a:hover{
+  text-decoration:underline;
+}
+
+/* SEARCH DROPDOWN */
+.search-container { position: relative; }
 
 .dropdown {
   position: absolute;
@@ -115,7 +129,9 @@ button:disabled {
   color: #ff4fa3;
 }
 
-  #popupBtn {
+#popupBtn {
+  margin-top: 15px;
+  width: 100%;
   background: #ff4fa3;
   color: white;
   border: none;
@@ -124,12 +140,6 @@ button:disabled {
   cursor: pointer;
   font-weight: 600;
 }
-
-#popupBtn {
-  margin-top: 15px;
-  width: 100%;
-}
-
 </style>
 </head>
 
@@ -146,6 +156,15 @@ button:disabled {
       <div id="dropdownList" class="dropdown"></div>
     </div>
     <input type="hidden" name="nama" id="namaHidden">
+
+    <!-- INFO TEXT + WHATSAPP LINK -->
+    <small class="info-text">
+      ℹ️ Nama hanya dapat dipilih dari daftar yang tersedia.<br>
+      Jika nama belum terdaftar atau perlu perubahan data,
+      <a href="https://wa.me/6283877710233?text=A'%20mau%20daftar%20atau%20ubah%20nama%20data%20laporan%20FL%20Suryatokoku..." target="_blank">
+      silakan klik di sini
+      </a>.
+    </small>
 
     <label>Posisi</label>
     <select name="posisi" required>
@@ -187,12 +206,11 @@ button:disabled {
 <div id="popup" class="popup">
   <div class="popup-box">
     <div id="popupText">Memuat...</div>
-    <button id="popupBtn" style="margin-top:15px; display:none;">
+    <button id="popupBtn" style="display:none;">
       Oke siap dengan senang hati 😊
     </button>
   </div>
 </div>
-
 
 <script>
 const scriptURL = 'https://script.google.com/macros/s/AKfycbwuOEOAHi0iQHUsdzFKxENor-t39RNmbpiW36ZFD0gRVm-NMrrrnUpuRtUU7XMUkTseZg/exec';
@@ -205,139 +223,86 @@ const namaSearch = document.getElementById("namaSearch");
 const dropdownList = document.getElementById("dropdownList");
 const namaHidden = document.getElementById("namaHidden");
 const codInput = document.getElementById("cod");
-
 const popup = document.getElementById("popup");
 const popupText = document.getElementById("popupText");
 const popupBtn = document.getElementById("popupBtn");
 
-
-function showPopup(text, showButton = false) {
-  popupText.innerHTML = text;
-  popup.style.display = "flex";
-
-  if (showButton) {
-    popupBtn.style.display = "block";
-  } else {
-    popupBtn.style.display = "none";
-  }
+function showPopup(text, showButton=false){
+  popupText.innerHTML=text;
+  popup.style.display="flex";
+  popupBtn.style.display=showButton?"block":"none";
 }
-
-popupBtn.onclick = function() {
-  popup.style.display = "none";
-};
-
+popupBtn.onclick=()=>popup.style.display="none";
 
 /* LOAD NAMA */
 fetch(scriptURL)
-  .then(res => res.json())
-  .then(data => {
-    daftarNama = data;
-    namaSearch.disabled = false;
-    namaSearch.placeholder = "Ketik nama...";
-  })
-  .catch(() => {
-    namaSearch.placeholder = "Gagal memuat data";
-  });
+.then(res=>res.json())
+.then(data=>{
+  daftarNama=data;
+  namaSearch.disabled=false;
+  namaSearch.placeholder="Ketik nama...";
+})
+.catch(()=> namaSearch.placeholder="Gagal memuat data");
 
-/* SEARCH DROPDOWN */
-namaSearch.addEventListener("input", function () {
-  const keyword = this.value.toLowerCase();
-  dropdownList.innerHTML = "";
+/* SEARCH */
+namaSearch.addEventListener("input", function(){
+  const keyword=this.value.toLowerCase();
+  dropdownList.innerHTML="";
+  if(!keyword){ dropdownList.style.display="none"; return; }
 
-  if (keyword === "") {
-    dropdownList.style.display = "none";
-    return;
-  }
-
-  const hasil = daftarNama.filter(nama =>
-    nama.toLowerCase().includes(keyword)
-  );
-
-  hasil.forEach(nama => {
-    const div = document.createElement("div");
-    div.textContent = nama;
-    div.onclick = () => {
-      namaSearch.value = nama;
-      namaHidden.value = nama;
-      dropdownList.style.display = "none";
+  const hasil=daftarNama.filter(n=>n.toLowerCase().includes(keyword));
+  hasil.forEach(n=>{
+    const div=document.createElement("div");
+    div.textContent=n;
+    div.onclick=()=>{
+      namaSearch.value=n;
+      namaHidden.value=n;
+      dropdownList.style.display="none";
     };
     dropdownList.appendChild(div);
   });
-
-  dropdownList.style.display = hasil.length ? "block" : "none";
-});
-
-/* TUTUP DROPDOWN JIKA KLIK LUAR */
-document.addEventListener("click", e => {
-  if (!document.querySelector(".search-container").contains(e.target)) {
-    dropdownList.style.display = "none";
-  }
+  dropdownList.style.display=hasil.length?"block":"none";
 });
 
 /* FORMAT RUPIAH */
-codInput.addEventListener("input", function() {
-  let value = this.value.replace(/[^0-9]/g, "");
-  if (value) {
-    this.value = "Rp" + new Intl.NumberFormat("id-ID").format(value);
-  } else {
-    this.value = "";
-  }
+codInput.addEventListener("input", function(){
+  let value=this.value.replace(/\D/g,"");
+  this.value=value ? "Rp"+new Intl.NumberFormat("id-ID").format(value) : "";
 });
 
-
-/* FORMAT JUMLAH TRANSAKSI */
-const closingInput = document.getElementById("closingan");
-
-// saat mengetik → hanya angka
-closingInput.addEventListener("input", function() {
-  this.value = this.value.replace(/[^0-9]/g, "");
-});
-
-// saat keluar dari kolom → tambah teks
-closingInput.addEventListener("blur", function() {
-  if (this.value !== "") {
-    this.value = this.value + " Transaksi";
-  }
-});
-
-// saat diklik lagi → hilangkan teks supaya mudah edit
-closingInput.addEventListener("focus", function() {
-  this.value = this.value.replace(/[^0-9]/g, "");
-});
-
-  
+/* FORMAT TRANSAKSI */
+const closingInput=document.getElementById("closingan");
+closingInput.addEventListener("input",()=> closingInput.value=closingInput.value.replace(/\D/g,""));
+closingInput.addEventListener("blur",()=>{ if(closingInput.value) closingInput.value+=" Transaksi"; });
+closingInput.addEventListener("focus",()=> closingInput.value=closingInput.value.replace(/\D/g,""));
 
 /* SUBMIT */
-form.addEventListener('submit', e => {
-  e.preventDefault();
+form.addEventListener('submit', e=>{
+ e.preventDefault();
 
-  if (!daftarNama.includes(namaHidden.value)) {
-    showPopup("Nama belum terdaftar!");
-    setTimeout(() => popup.style.display = "none", 1500);
-    return;
-  }
+ if(!daftarNama.includes(namaHidden.value)){
+   showPopup("Nama belum terdaftar!");
+   setTimeout(()=>popup.style.display="none",1500);
+   return;
+ }
 
-  showPopup("Mengirim laporan...");
-  submitBtn.disabled = true;
+ showPopup("Mengirim laporan...");
+ submitBtn.disabled=true;
 
-  // kirim angka bersih
-  codInput.value = codInput.value.replace(/[^0-9]/g, "");
-  closingInput.value = closingInput.value.replace(/[^0-9]/g, "");
+ codInput.value=codInput.value.replace(/\D/g,"");
+ closingInput.value=closingInput.value.replace(/\D/g,"");
 
-  fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-    .then(() => {
-      showPopup("✔ Laporan berhasil dikirim<br><br>Terima kasih atas kerja keras hari ini 🙏<br>Tetap semangat dan terus memberikan yang terbaik! ✨", true);
-
-      form.reset();
-      namaHidden.value = "";
-      dropdownList.style.display = "none";
-      submitBtn.disabled = false;
-    })
-    .catch(() => {
-      showPopup("Gagal mengirim data");
-      submitBtn.disabled = false;
-      setTimeout(hidePopup, 2000);
-    });
+ fetch(scriptURL,{method:'POST',body:new FormData(form)})
+ .then(()=>{
+   showPopup("✔ Laporan berhasil dikirim<br><br>Terima kasih atas kerja keras hari ini 🙏<br>Tetap semangat dan terus memberikan yang terbaik! ✨",true);
+   form.reset();
+   namaHidden.value="";
+   submitBtn.disabled=false;
+ })
+ .catch(()=>{
+   showPopup("Gagal mengirim data");
+   submitBtn.disabled=false;
+ });
 });
 </script>
 
