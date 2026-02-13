@@ -105,6 +105,33 @@ td, th{
     font-size:12px;
   }
 }
+
+/* Freeze kolom No */
+th:nth-child(1),
+td:nth-child(1){
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 3;
+}
+
+/* Freeze kolom Nama */
+th:nth-child(2),
+td:nth-child(2){
+  position: sticky;
+  left: 45px; /* lebar kolom No */
+  background: #fff;
+  z-index: 3;
+}
+
+/* Header tetap pink */
+th:nth-child(1),
+th:nth-child(2){
+  background:#ff4fa3;
+  color:#fff;
+  z-index:4;
+}
+
 </style>
 </head>
 
