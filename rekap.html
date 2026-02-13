@@ -133,7 +133,7 @@ function loadData(){
     <td>${nama}</td>
     <td>${posisi}</td>
     <td>${cod ? formatRupiah(cod) : "-"}</td>
-    <td>${closing ? closing + " Transaksi" : "-"}</td>
+    <td>${closing ? new Intl.NumberFormat("id-ID").format(closing) + " Transaksi" : "-"}</td>
     <td>${row[5] || "-"}</td>
     <td>${row[6] || "-"}</td>
     <td>${row[7] || "-"}</td>
@@ -144,7 +144,8 @@ function loadData(){
 
 
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
-    document.getElementById("totalClosing").innerHTML = totalClosing + " Transaksi";
+    document.getElementById("totalClosing").innerHTML =
+  new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
   });
 }
 </script>
