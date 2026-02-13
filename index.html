@@ -257,15 +257,23 @@ codInput.addEventListener("input", function() {
 /* FORMAT JUMLAH TRANSAKSI */
 const closingInput = document.getElementById("closingan");
 
+// saat mengetik → hanya angka
 closingInput.addEventListener("input", function() {
-  let value = this.value.replace(/[^0-9]/g, "");
+  this.value = this.value.replace(/[^0-9]/g, "");
+});
 
-  if (value) {
-    this.value = value + " Transaksi";
-  } else {
-    this.value = "";
+// saat keluar dari kolom → tambah teks
+closingInput.addEventListener("blur", function() {
+  if (this.value !== "") {
+    this.value = this.value + " Transaksi";
   }
 });
+
+// saat diklik lagi → hilangkan teks supaya mudah edit
+closingInput.addEventListener("focus", function() {
+  this.value = this.value.replace(/[^0-9]/g, "");
+});
+
   
 
 /* SUBMIT */
@@ -287,7 +295,8 @@ form.addEventListener('submit', e => {
 
   fetch(scriptURL, { method: 'POST', body: new FormData(form)})
     .then(() => {
-      showPopup("✔ Laporan berhasil dikirim");
+      showPopup("✔ Laporan berhasil dikirim<br><br>Terima kasih atas kerja keras hari ini 🙏<br>Tetap semangat dan terus memberikan yang terbaik! ✨");
+
       form.reset();
       namaHidden.value = "";
       dropdownList.style.display = "none";
