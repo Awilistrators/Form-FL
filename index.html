@@ -114,6 +114,17 @@ button:disabled {
   text-align: center;
   color: #ff4fa3;
 }
+
+  #popupBtn {
+  background: #ff4fa3;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 </style>
 </head>
 
@@ -169,8 +180,14 @@ button:disabled {
 
 <!-- POPUP -->
 <div id="popup" class="popup">
-  <div class="popup-box" id="popupText">Memuat...</div>
+  <div class="popup-box">
+    <div id="popupText">Memuat...</div>
+    <button id="popupBtn" style="margin-top:15px; display:none;">
+      Oke siap dengan senang hati 😊
+    </button>
+  </div>
 </div>
+
 
 <script>
 const scriptURL = 'https://script.google.com/macros/s/AKfycby_QbtHl9pO1Z6OUWaz27iNBNiP69SAD42Q-boIpg5scIYPkjNEdWPX7n2H4ef0Jmgdww/exec';
@@ -186,15 +203,24 @@ const codInput = document.getElementById("cod");
 
 const popup = document.getElementById("popup");
 const popupText = document.getElementById("popupText");
+const popupBtn = document.getElementById("popupBtn");
 
-function showPopup(text) {
+
+function showPopup(text, showButton = false) {
   popupText.innerHTML = text;
   popup.style.display = "flex";
+
+  if (showButton) {
+    popupBtn.style.display = "block";
+  } else {
+    popupBtn.style.display = "none";
+  }
 }
 
-function hidePopup() {
+popupBtn.onclick = function() {
   popup.style.display = "none";
-}
+};
+
 
 /* LOAD NAMA */
 fetch(scriptURL)
@@ -301,7 +327,6 @@ form.addEventListener('submit', e => {
       namaHidden.value = "";
       dropdownList.style.display = "none";
       submitBtn.disabled = false;
-      setTimeout(hidePopup, 1500);
     })
     .catch(() => {
       showPopup("Gagal mengirim data");
