@@ -14,7 +14,6 @@ body{
   color:#ff4fa3;
 }
 
-/* CONTAINER */
 .container{
   max-width:100%;
   margin:auto;
@@ -24,14 +23,12 @@ body{
   box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
 
-/* TITLE */
 h1{
   text-align:center;
   font-size:20px;
   margin-bottom:20px;
 }
 
-/* BUTTON */
 button{
   width:100%;
   padding:14px;
@@ -57,15 +54,12 @@ button:hover{
   background:#1f6fe0;
 }
 
-/* TABLE WRAPPER */
 .table-wrapper{
   overflow-x:auto;
   width:100%;
-  -webkit-overflow-scrolling: touch;
   margin-top:10px;
 }
 
-/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
@@ -79,7 +73,6 @@ th{
   padding:8px;
   position: sticky;
   top: 0;
-  z-index: 2;
 }
 
 td{
@@ -94,11 +87,6 @@ td:nth-child(2){
   padding-left:10px;
 }
 
-td, th{
-  white-space: nowrap;
-}
-
-/* INFO UPDATE */
 .info-update{
   margin-top:14px;
   margin-bottom:10px;
@@ -108,7 +96,6 @@ td, th{
   line-height:1.5;
 }
 
-/* TOTAL */
 .total{
   margin-top:18px;
   font-weight:600;
@@ -116,21 +103,6 @@ td, th{
   font-size:18px;
   line-height:1.6;
 }
-
-/* RESPONSIVE */
-@media (max-width:1024px){
-  h1{
-    font-size:48px;
-    line-height:1.25;
-  }
-
-  button{
-    font-size:32px;
-    padding:22px;
-  }
-}
-
-
 </style>
 </head>
 
@@ -168,7 +140,6 @@ td, th{
 </table>
 </div>
 
-<!-- INFO UPDATE -->
 <div class="info-update">
 ℹ️ Apabila terdapat kesalahan input atau perubahan data, laporan harian dapat diisi ulang.<br>
 Sistem akan otomatis memperbarui data sebelumnya dengan data terbaru.
@@ -190,15 +161,18 @@ function formatRupiah(n){
 
 function loadToday(){
 
- const today = new Date();
- const tanggal = today.toLocaleDateString("id-ID", {
+ const todayObj = new Date();
+
+ const tanggalTeks = todayObj.toLocaleDateString("id-ID", {
    day: "numeric",
    month: "long",
    year: "numeric"
  });
 
  document.getElementById("judulTanggal").innerHTML =
-   "Laporan Hari Ini : " + tanggal;
+   "Laporan Hari Ini : " + tanggalTeks;
+
+ const today = todayObj.toISOString().split("T")[0];
 
  fetch(scriptURL)
   .then(res=>res.json())
@@ -208,10 +182,18 @@ function loadToday(){
 
     let totalCod=0;
     let totalClosing=0;
+    let nomor=1;
+    let adaData=false;
 
     data.forEach(row=>{
 
       if(!row[1]) return;
+
+      const tanggalData = new Date(row[0]).toISOString().split("T")[0];
+
+      if(tanggalData !== today) return;
+
+      adaData = true;
 
       const cod = Number(row[3])||0;
       const closing = Number(row[4])||0;
@@ -222,7 +204,7 @@ function loadToday(){
       const tr=document.createElement("tr");
 
       tr.innerHTML=`
-        <td>${row[0]}</td>
+        <td>${nomor++}</td>
         <td>${row[1]}</td>
         <td>${row[2]}</td>
         <td>${cod ? formatRupiah(cod) : "-"}</td>
@@ -234,6 +216,10 @@ function loadToday(){
 
       tbody.appendChild(tr);
     });
+
+    if(!adaData){
+      tbody.innerHTML = "<tr><td colspan='8'>Belum ada laporan hari ini</td></tr>";
+    }
 
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML =
