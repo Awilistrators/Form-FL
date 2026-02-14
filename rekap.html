@@ -6,6 +6,10 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <style>
 body{
   font-family:Poppins;
@@ -25,10 +29,6 @@ body{
 
 h2{text-align:center;margin-bottom:15px}
 
-.filter-box{
-  margin-bottom:15px;
-}
-
 .filter-box label{
   display:block;
   margin-top:8px;
@@ -38,32 +38,18 @@ h2{text-align:center;margin-bottom:15px}
 
 .filter-box input{
   width:100%;
-  padding:8px;
+  padding:10px;
   border-radius:8px;
   border:1px solid #ddd;
-  margin-top:4px;
-}
-
-.filter-box button{
-  margin-top:12px;
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:#2d8cff;
-  color:white;
-  font-weight:600;
+  margin-top:6px;
   cursor:pointer;
-}
-
-.filter-box button:hover{
-  background:#1f6fe0;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
   font-size:13px;
+  margin-top:15px;
 }
 
 th{
@@ -98,13 +84,8 @@ td:nth-child(2){
 <h2>Rekap Laporan Frontliner</h2>
 
 <div class="filter-box">
-  <label>Dari Tanggal</label>
-  <input type="date" id="tglAwal">
-
-  <label>Sampai Tanggal</label>
-  <input type="date" id="tglAkhir">
-
-  <button onclick="loadData()">Tampilkan Data</button>
+  <label>Pilih Periode</label>
+  <input type="text" id="periode" placeholder="Klik untuk pilih tanggal" readonly>
 </div>
 
 <table>
@@ -133,19 +114,31 @@ Total Closing: <span id="totalClosing">0</span>
 <script>
 const scriptURL = "https://script.google.com/macros/s/AKfycbwyNAIA0dK0k8RcrokxpguMIqZLYDAlDA-aODlVb9NEdd3JUMPuxSmAe3AsBGFmyEIUfA/exec";
 
+let startDate = "";
+let endDate = "";
+
+flatpickr("#periode", {
+  mode: "range",
+  dateFormat: "Y-m-d",
+  onClose: function(selectedDates){
+    if(selectedDates.length === 2){
+      startDate = selectedDates[0].toISOString().split('T')[0];
+      endDate = selectedDates[1].toISOString().split('T')[0];
+      loadData();
+    }
+  }
+});
+
 function formatRupiah(n){
   return n ? "Rp" + new Intl.NumberFormat("id-ID").format(n) : "-";
 }
 
 function loadData(){
 
-  const start = document.getElementById("tglAwal").value;
-  const end = document.getElementById("tglAkhir").value;
-
   let url = scriptURL + "?rekap=1";
 
-  if(start && end){
-    url += "&start=" + start + "&end=" + end;
+  if(startDate && endDate){
+    url += "&start=" + startDate + "&end=" + endDate;
   }
 
  fetch(url)
@@ -159,14 +152,13 @@ function loadData(){
 
     data.forEach((row, index) => {
 
-  if (!row[1]) return;
+      if (!row[1]) return;
 
-  const no = index + 1;
-  const nama = row[1];
-  const posisi = row[2];
-  const cod = Number(row[3]) || 0;
-  const closing = Number(row[4]) || 0;
-
+      const no = index + 1;
+      const nama = row[1];
+      const posisi = row[2];
+      const cod = Number(row[3]) || 0;
+      const closing = Number(row[4]) || 0;
 
       totalCod += cod;
       totalClosing += closing;
@@ -193,7 +185,7 @@ function loadData(){
   });
 }
 
-// load otomatis saat halaman dibuka
+// load semua data saat halaman dibuka
 loadData();
 </script>
 
