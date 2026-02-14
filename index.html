@@ -172,7 +172,7 @@ function loadToday(){
  document.getElementById("judulTanggal").innerHTML =
    "Laporan Hari Ini : " + tanggalTeks;
 
- const today = todayObj.toISOString().split("T")[0];
+ const today = todayObj.toDateString(); // 🔥 format aman
 
  fetch(scriptURL)
   .then(res=>res.json())
@@ -189,7 +189,8 @@ function loadToday(){
 
       if(!row[1]) return;
 
-      const tanggalData = new Date(row[0]).toISOString().split("T")[0];
+      // 🔥 ubah tanggal sheet ke format universal
+      const tanggalData = new Date(row[0]).toDateString();
 
       if(tanggalData !== today) return;
 
