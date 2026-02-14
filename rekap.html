@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=1024">
-<title>Rekap Harian</title>
+<title>Rekap Laporan Frontliner</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
@@ -23,13 +23,41 @@ body{
   box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
 
-h2{text-align:center}
+h2{text-align:center;margin-bottom:15px}
 
-input{
+.filter-box{
+  margin-bottom:15px;
+}
+
+.filter-box label{
+  display:block;
+  margin-top:8px;
+  font-size:13px;
+  color:#666;
+}
+
+.filter-box input{
+  width:100%;
   padding:8px;
   border-radius:8px;
   border:1px solid #ddd;
-  margin-bottom:15px;
+  margin-top:4px;
+}
+
+.filter-box button{
+  margin-top:12px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#2d8cff;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.filter-box button:hover{
+  background:#1f6fe0;
 }
 
 table{
@@ -48,16 +76,17 @@ td{
   padding:6px;
   border-bottom:1px solid #eee;
   text-align:center;
-  color: #000;
+  color:#000;
 }
 
-td:nth-child(2) {
-  text-align: left;
+td:nth-child(2){
+  text-align:left;
 }
 
 .total{
   margin-top:15px;
   font-weight:600;
+  font-size:15px;
 }
 </style>
 </head>
@@ -66,10 +95,17 @@ td:nth-child(2) {
 
 <div class="container">
 
-<h2>Rekap Harian Frontliner</h2>
+<h2>Rekap Laporan Frontliner</h2>
 
-<label>Pilih Tanggal</label><br>
-<input type="date" id="tanggal">
+<div class="filter-box">
+  <label>Dari Tanggal</label>
+  <input type="date" id="tglAwal">
+
+  <label>Sampai Tanggal</label>
+  <input type="date" id="tglAkhir">
+
+  <button onclick="loadData()">Tampilkan Data</button>
+</div>
 
 <table>
 <thead>
@@ -95,16 +131,24 @@ Total Closing: <span id="totalClosing">0</span>
 </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbx47ff8CiOqc6EzBmlz6PQxdTqMUDCS6I4wQhwJHD4Z4bIhjY1zUA_Yn6wHHOm5L2Ww1A/exec?rekap=1";
-
-document.getElementById("tanggal").addEventListener("change", loadData);
+const scriptURL = "https://script.google.com/macros/s/AKfycbwyNAIA0dK0k8RcrokxpguMIqZLYDAlDA-aODlVb9NEdd3JUMPuxSmAe3AsBGFmyEIUfA/exec";
 
 function formatRupiah(n){
   return n ? "Rp" + new Intl.NumberFormat("id-ID").format(n) : "-";
 }
 
 function loadData(){
- fetch(scriptURL)
+
+  const start = document.getElementById("tglAwal").value;
+  const end = document.getElementById("tglAkhir").value;
+
+  let url = scriptURL + "?rekap=1";
+
+  if(start && end){
+    url += "&start=" + start + "&end=" + end;
+  }
+
+ fetch(url)
   .then(res=>res.json())
   .then(data=>{
     const tbody=document.getElementById("data");
@@ -115,39 +159,41 @@ function loadData(){
 
     data.forEach(row => {
 
-  if (!row[1]) return; // skip baris kosong
+      if (!row[1]) return;
 
-  const no = row[0];
-  const nama = row[1];
-  const posisi = row[2];
-  const cod = Number(row[3]) || 0;
-  const closing = Number(row[4]) || 0;
+      const no = row[0];
+      const nama = row[1];
+      const posisi = row[2];
+      const cod = Number(row[3]) || 0;
+      const closing = Number(row[4]) || 0;
 
-  const tr = document.createElement("tr");
+      totalCod += cod;
+      totalClosing += closing;
 
-  totalCod += cod;
-  totalClosing += closing;
+      const tr = document.createElement("tr");
 
-  tr.innerHTML = `
-    <td>${no}</td>
-    <td>${nama}</td>
-    <td>${posisi}</td>
-    <td>${cod ? formatRupiah(cod) : "-"}</td>
-    <td>${closing ? new Intl.NumberFormat("id-ID").format(closing) + " Transaksi" : "-"}</td>
-    <td>${row[5] || "-"}</td>
-    <td>${row[6] || "-"}</td>
-    <td>${row[7] || "-"}</td>
-  `;
+      tr.innerHTML = `
+        <td>${no}</td>
+        <td>${nama}</td>
+        <td>${posisi}</td>
+        <td>${cod ? formatRupiah(cod) : "-"}</td>
+        <td>${closing ? new Intl.NumberFormat("id-ID").format(closing) + " Transaksi" : "-"}</td>
+        <td>${row[5] || "-"}</td>
+        <td>${row[6] || "-"}</td>
+        <td>${row[7] || "-"}</td>
+      `;
 
-  tbody.appendChild(tr);
-});
-
+      tbody.appendChild(tr);
+    });
 
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML =
-  new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
+      new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
   });
 }
+
+// load otomatis saat halaman dibuka
+loadData();
 </script>
 
 </body>
