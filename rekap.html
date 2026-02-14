@@ -1,14 +1,12 @@
+backup rekap.html
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=1024">
-<title>Rekap Laporan Frontliner</title>
+<title>Rekap Harian</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-<!-- Flatpickr -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <style>
 body{
@@ -27,46 +25,19 @@ body{
   box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
 
-h2{text-align:center;margin-bottom:15px}
+h2{text-align:center}
 
-.filter-box label{
-  display:block;
-  margin-top:8px;
-  font-size:13px;
-  color:#666;
-}
-
-.filter-box input{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
+input{
+  padding:8px;
+  border-radius:8px;
   border:1px solid #ddd;
-  margin-top:6px;
-  cursor:pointer;
-  text-align:center;
-  font-weight:600;
-  font-size:14px;
-  background:#fafafa;
-  box-sizing:border-box;   /* 🔥 WAJIB */
-}
-
-.filter-box{
-  width:100%;
-}
-
-.filter-box label{
-  display:block;
-  margin-top:8px;
-  font-size:13px;
-  color:#666;
-  text-align:center;
+  margin-bottom:15px;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
   font-size:13px;
-  margin-top:15px;
 }
 
 th{
@@ -79,23 +50,17 @@ td{
   padding:6px;
   border-bottom:1px solid #eee;
   text-align:center;
-  color:#000;
+  color: #000;
 }
 
-td:nth-child(2){
-  text-align:left;
+td:nth-child(2) {
+  text-align: left;
 }
 
 .total{
   margin-top:15px;
   font-weight:600;
-  font-size:15px;
 }
-
-::placeholder{
-  text-align:center;
-}
-
 </style>
 </head>
 
@@ -103,12 +68,10 @@ td:nth-child(2){
 
 <div class="container">
 
-<h2>Rekap Laporan Frontliner</h2>
+<h2>Rekap Harian Frontliner</h2>
 
-<div class="filter-box">
-  <label>Pilih Periode</label>
-  <input type="text" id="periode" placeholder="Klik untuk pilih tanggal" readonly>
-</div>
+<label>Pilih Tanggal</label><br>
+<input type="date" id="tanggal">
 
 <table>
 <thead>
@@ -134,36 +97,16 @@ Total Closing: <span id="totalClosing">0</span>
 </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbwyNAIA0dK0k8RcrokxpguMIqZLYDAlDA-aODlVb9NEdd3JUMPuxSmAe3AsBGFmyEIUfA/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbz5hKN3bkojIAVsWrdJJwfD9bZRUMsJeIWlaCOks8pMjmkdpEiR2tLrmmVCWVyAE2zBZw/exec?rekap=1";
 
-let startDate = "";
-let endDate = "";
-
-flatpickr("#periode", {
-  mode: "range",
-  dateFormat: "Y-m-d",
-  onClose: function(selectedDates){
-    if(selectedDates.length === 2){
-      startDate = selectedDates[0].toISOString().split('T')[0];
-      endDate = selectedDates[1].toISOString().split('T')[0];
-      loadData();
-    }
-  }
-});
+document.getElementById("tanggal").addEventListener("change", loadData);
 
 function formatRupiah(n){
   return n ? "Rp" + new Intl.NumberFormat("id-ID").format(n) : "-";
 }
 
 function loadData(){
-
-  let url = scriptURL + "?rekap=1";
-
-  if(startDate && endDate){
-    url += "&start=" + startDate + "&end=" + endDate;
-  }
-
- fetch(url)
+ fetch(scriptURL)
   .then(res=>res.json())
   .then(data=>{
     const tbody=document.getElementById("data");
@@ -172,43 +115,41 @@ function loadData(){
     let totalCod=0;
     let totalClosing=0;
 
-    data.forEach((row, index) => {
+    data.forEach(row => {
 
-      if (!row[1]) return;
+  if (!row[1]) return; // skip baris kosong
 
-      const no = index + 1;
-      const nama = row[1];
-      const posisi = row[2];
-      const cod = Number(row[3]) || 0;
-      const closing = Number(row[4]) || 0;
+  const no = row[0];
+  const nama = row[1];
+  const posisi = row[2];
+  const cod = Number(row[3]) || 0;
+  const closing = Number(row[4]) || 0;
 
-      totalCod += cod;
-      totalClosing += closing;
+  const tr = document.createElement("tr");
 
-      const tr = document.createElement("tr");
+  totalCod += cod;
+  totalClosing += closing;
 
-      tr.innerHTML = `
-        <td>${no}</td>
-        <td>${nama}</td>
-        <td>${posisi}</td>
-        <td>${cod ? formatRupiah(cod) : "-"}</td>
-        <td>${closing ? new Intl.NumberFormat("id-ID").format(closing) + " Transaksi" : "-"}</td>
-        <td>${row[5] || "-"}</td>
-        <td>${row[6] || "-"}</td>
-        <td>${row[7] || "-"}</td>
-      `;
+  tr.innerHTML = `
+    <td>${no}</td>
+    <td>${nama}</td>
+    <td>${posisi}</td>
+    <td>${cod ? formatRupiah(cod) : "-"}</td>
+    <td>${closing ? new Intl.NumberFormat("id-ID").format(closing) + " Transaksi" : "-"}</td>
+    <td>${row[5] || "-"}</td>
+    <td>${row[6] || "-"}</td>
+    <td>${row[7] || "-"}</td>
+  `;
 
-      tbody.appendChild(tr);
-    });
+  tbody.appendChild(tr);
+});
+
 
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML =
-      new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
+  new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
   });
 }
-
-// load semua data saat halaman dibuka
-loadData();
 </script>
 
 </body>
