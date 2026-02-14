@@ -177,30 +177,40 @@ function loadData(){
 
       if(!row[1]) return;
 
-      // ambil angka COD dari teks Rp
-      const codNumber = parseInt(String(row[3]).replace(/\D/g,'')) || 0;
+     // ambil angka COD dari teks
+const codNumber = parseInt(String(row[3]).replace(/\D/g,'')) || 0;
 
-      // ambil angka closing
-      const closingNumber = parseInt(String(row[4]).replace(/\D/g,'')) || 0;
+// ambil angka closing
+const closingNumber = parseInt(String(row[4]).replace(/\D/g,'')) || 0;
 
-      totalCod += codNumber;
-      totalClosing += closingNumber;
+// format tampilan COD
+const codFormat = codNumber
+  ? "Rp" + new Intl.NumberFormat("id-ID").format(codNumber)
+  : "-";
 
-      const tr=document.createElement("tr");
+// format tampilan closing
+const closingFormat = closingNumber
+  ? new Intl.NumberFormat("id-ID").format(closingNumber) + " Transaksi"
+  : "-";
 
-      tr.innerHTML=`
-        <td>${row[0]}</td>
-        <td>${row[1]}</td>
-        <td>${row[2]}</td>
-        <td>${row[3] || "-"}</td>
-        <td>${row[4] || "-"}</td>
-        <td>${row[5] || "-"}</td>
-        <td>${row[6] || "-"}</td>
-        <td>${row[7] || "-"}</td>
-      `;
+totalCod += codNumber;
+totalClosing += closingNumber;
 
-      tbody.appendChild(tr);
-    });
+const tr = document.createElement("tr");
+
+tr.innerHTML=`
+  <td>${row[0]}</td>
+  <td>${row[1]}</td>
+  <td>${row[2]}</td>
+  <td>${codFormat}</td>
+  <td>${closingFormat}</td>
+  <td>${row[5] || "-"}</td>
+  <td>${row[6] || "-"}</td>
+  <td>${row[7] || "-"}</td>
+`;
+
+tbody.appendChild(tr);
+
 
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML =
