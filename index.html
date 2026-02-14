@@ -42,17 +42,10 @@ button{
   font-size:15px;
 }
 
-button:hover{
-  background:#e04391;
-}
+button:hover{ background:#e04391; }
 
-.btn-rekap{
-  background:#2d8cff;
-}
-
-.btn-rekap:hover{
-  background:#1f6fe0;
-}
+.btn-rekap{ background:#2d8cff; }
+.btn-rekap:hover{ background:#1f6fe0; }
 
 .table-wrapper{
   overflow-x:auto;
@@ -153,26 +146,23 @@ Total Closing: <span id="totalClosing">0</span>
 </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbz5hKN3bkojIAVsWrdJJwfD9bZRUMsJeIWlaCOks8pMjmkdpEiR2tLrmmVCWVyAE2zBZw/exec?rekap=1";
+const scriptURL = "https://script.google.com/macros/s/AKfycbx2RrZq8oL_PGEzpuh35g2ZoGrGeqySoMCZINQPV1WVOQGYkKmbU4-MJKa7fFzyqOi6mw/exec?rekap=1";
 
 function formatRupiah(n){
   return n ? "Rp" + new Intl.NumberFormat("id-ID").format(n) : "-";
 }
 
-function loadToday(){
+function loadData(){
 
- const todayObj = new Date();
-
- const tanggalTeks = todayObj.toLocaleDateString("id-ID", {
-   day: "numeric",
-   month: "long",
-   year: "numeric"
+ // tampilkan tanggal hari ini di judul
+ const today = new Date().toLocaleDateString("id-ID", {
+   day:"numeric",
+   month:"long",
+   year:"numeric"
  });
 
  document.getElementById("judulTanggal").innerHTML =
-   "Laporan Hari Ini : " + tanggalTeks;
-
- const today = todayObj.toDateString(); // 🔥 format aman
+   "Laporan Hari Ini : " + today;
 
  fetch(scriptURL)
   .then(res=>res.json())
@@ -182,34 +172,28 @@ function loadToday(){
 
     let totalCod=0;
     let totalClosing=0;
-    let nomor=1;
-    let adaData=false;
 
     data.forEach(row=>{
 
       if(!row[1]) return;
 
-      // 🔥 ubah tanggal sheet ke format universal
-      const tanggalData = new Date(row[0]).toDateString();
+      // ambil angka COD dari teks Rp
+      const codNumber = parseInt(String(row[3]).replace(/\D/g,'')) || 0;
 
-      if(tanggalData !== today) return;
+      // ambil angka closing
+      const closingNumber = parseInt(String(row[4]).replace(/\D/g,'')) || 0;
 
-      adaData = true;
-
-      const cod = Number(row[3])||0;
-      const closing = Number(row[4])||0;
-
-      totalCod += cod;
-      totalClosing += closing;
+      totalCod += codNumber;
+      totalClosing += closingNumber;
 
       const tr=document.createElement("tr");
 
       tr.innerHTML=`
-        <td>${nomor++}</td>
+        <td>${row[0]}</td>
         <td>${row[1]}</td>
         <td>${row[2]}</td>
-        <td>${cod ? formatRupiah(cod) : "-"}</td>
-        <td>${closing ? new Intl.NumberFormat("id-ID").format(closing) + " Transaksi" : "-"}</td>
+        <td>${row[3] || "-"}</td>
+        <td>${row[4] || "-"}</td>
         <td>${row[5] || "-"}</td>
         <td>${row[6] || "-"}</td>
         <td>${row[7] || "-"}</td>
@@ -218,17 +202,13 @@ function loadToday(){
       tbody.appendChild(tr);
     });
 
-    if(!adaData){
-      tbody.innerHTML = "<tr><td colspan='8'>Belum ada laporan hari ini</td></tr>";
-    }
-
     document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML =
       new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
   });
 }
 
-loadToday();
+loadData();
 </script>
 
 </body>
