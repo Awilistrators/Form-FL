@@ -177,46 +177,51 @@ function loadData(){
 
       if(!row[1]) return;
 
-     // ambil angka COD dari teks
-const codNumber = parseInt(String(row[3]).replace(/\D/g,'')) || 0;
+      // ambil angka COD dari teks
+      const codNumber = parseInt(String(row[3]).replace(/\D/g,'')) || 0;
 
-// ambil angka closing
-const closingNumber = parseInt(String(row[4]).replace(/\D/g,'')) || 0;
+      // ambil angka closing
+      const closingNumber = parseInt(String(row[4]).replace(/\D/g,'')) || 0;
 
-// format tampilan COD
-const codFormat = codNumber
-  ? "Rp" + new Intl.NumberFormat("id-ID").format(codNumber)
-  : "-";
+      // format tampilan COD
+      const codFormat = codNumber
+        ? "Rp" + new Intl.NumberFormat("id-ID").format(codNumber)
+        : "-";
 
-// format tampilan closing
-const closingFormat = closingNumber
-  ? new Intl.NumberFormat("id-ID").format(closingNumber) + " Transaksi"
-  : "-";
+      // format tampilan closing
+      const closingFormat = closingNumber
+        ? new Intl.NumberFormat("id-ID").format(closingNumber) + " Transaksi"
+        : "-";
 
-totalCod += codNumber;
-totalClosing += closingNumber;
+      totalCod += codNumber;
+      totalClosing += closingNumber;
 
-const tr = document.createElement("tr");
+      const tr = document.createElement("tr");
 
-tr.innerHTML=`
-  <td>${row[0]}</td>
-  <td>${row[1]}</td>
-  <td>${row[2]}</td>
-  <td>${codFormat}</td>
-  <td>${closingFormat}</td>
-  <td>${row[5] || "-"}</td>
-  <td>${row[6] || "-"}</td>
-  <td>${row[7] || "-"}</td>
-`;
+      tr.innerHTML=`
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td>${codFormat}</td>
+        <td>${closingFormat}</td>
+        <td>${row[5] || "-"}</td>
+        <td>${row[6] || "-"}</td>
+        <td>${row[7] || "-"}</td>
+      `;
 
-tbody.appendChild(tr);
+      tbody.appendChild(tr);
+    });
 
+    // 🔥 total ditaruh setelah loop selesai
+    document.getElementById("totalCod").innerHTML =
+      "Rp" + new Intl.NumberFormat("id-ID").format(totalCod);
 
-    document.getElementById("totalCod").innerHTML = formatRupiah(totalCod);
     document.getElementById("totalClosing").innerHTML =
       new Intl.NumberFormat("id-ID").format(totalClosing) + " Transaksi";
+
   });
 }
+
 
 loadData();
 </script>
